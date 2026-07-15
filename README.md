@@ -45,7 +45,3 @@ text2sql-with-mcp/
 - LLM-based SQL generation using Ollama
 - MCP integration (experimental)
 - Query validation
-
-## Author
-
-Ankita Sarkar
