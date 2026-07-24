@@ -87,4 +87,8 @@ INSERT INTO project VALUES
 conn.commit()
 conn.close()
 
+<<<<<<< HEAD
 print("Company database created successfully!")
+=======
+print("Company database created successfully!")
+>>>>>>> 915943c5540733ae01415dfbbcb220d2047f20a5
