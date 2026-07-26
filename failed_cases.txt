@@ -1,0 +1,909 @@
+WikiSQL Failed Cases
+================================================================================
+
+================================================================================
+Test Case : 2
+
+Question:
+When was Moores Creek Bridge built?
+
+Table:
+table_1
+
+Schema:
+Name (str)
+Built (str)
+Listed (str)
+Location (str)
+County (str)
+Type (str)
+
+Generated SQL:
+SELECT Built FROM table_1 WHERE Name = 'Moores Creek Bridge';
+
+Ground Truth SQL:
+SELECT Built FROM table_1 WHERE Name = 'moores creek bridge';
+
+LLM Result:
+[('1925',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 3
+
+Question:
+When +20.3 is the ± yes side 2008 (%) what is the for percentage?
+
+Table:
+table_2
+
+Schema:
+Constituency (str)
+Electorate (int64)
+s_Spoilt_vote (int64)
+Total_poll____ (str)
+For____ (str)
+Against____ (str)
+__Yes_side_2008____ (str)
+
+Generated SQL:
+SELECT For____ FROM table_2 WHERE __Yes_side_2008____ = '+20.3';
+
+Ground Truth SQL:
+SELECT For_% FROM table_2 WHERE ±_Yes_side_2008_% = +20.3;
+
+LLM Result:
+[('21,045 (63.5)',)]
+
+Ground Truth Result:
+Execution Error: Parser Error: syntax error at or near "FROM"
+
+LINE 1: SELECT For_% FROM table_2 WHERE ±_Yes_side_2008_% = +20.3;
+                     ^
+
+================================================================================
+Test Case : 6
+
+Question:
+What is the number of leg for ss17
+
+Table:
+table_5
+
+Schema:
+Leg (str)
+Stage (str)
+Time__EEST_ (str)
+Name (str)
+Length (str)
+Winner (str)
+Time (str)
+Avg__spd_ (str)
+Rally_leader (str)
+
+Generated SQL:
+SELECT COUNT(Leg) FROM table_5 WHERE Name = 'ss17';
+
+Ground Truth SQL:
+SELECT COUNT(Leg) FROM table_5 WHERE Stage = 'SS17';
+
+LLM Result:
+[(0,)]
+
+Ground Truth Result:
+[(1,)]
+
+================================================================================
+Test Case : 8
+
+Question:
+Name the most # of seats won
+
+Table:
+table_7
+
+Schema:
+Election (str)
+__of_candidates_nominated (int64)
+__of_seats_won (int64)
+__of_total_votes (int64)
+__of_popular_vote (str)
+result (str)
+
+Generated SQL:
+SELECT __of_seats_won FROM table_7 ORDER BY __of_seats_won DESC LIMIT 1;
+
+Ground Truth SQL:
+SELECT MAX(#_of_seats_won) FROM table_7;
+
+LLM Result:
+[(190,)]
+
+Ground Truth Result:
+Execution Error: Parser Error: syntax error at or near "_of_seats_won"
+
+LINE 1: SELECT MAX(#_of_seats_won) FROM table_7;
+                    ^
+
+================================================================================
+Test Case : 9
+
+Question:
+What are the highest points with a Chassis of gordini t16, and a Year smaller than 1954?
+
+Table:
+table_8
+
+Schema:
+Year (str)
+Team (str)
+Chassis (str)
+Engine (str)
+Points (str)
+
+Generated SQL:
+SELECT MAX ( Points ) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < '1954';
+
+Ground Truth SQL:
+SELECT MAX(Points) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < 1954;
+
+LLM Result:
+[(None,)]
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: ...(Points) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < 1954;
+                                                                        ^
+
+================================================================================
+Test Case : 14
+
+Question:
+Which year was the film Rang Barse introduced?
+
+Table:
+table_13
+
+Schema:
+Year (str)
+Film_name (str)
+Co_singer (str)
+Music_director (str)
+Lyricist (str)
+
+Generated SQL:
+SELECT Year FROM table_13 WHERE Film_name = 'Rang Barse';
+
+Ground Truth SQL:
+SELECT COUNT(Year) FROM table_13 WHERE Film_name = 'rang barse';
+
+LLM Result:
+[('2003',)]
+
+Ground Truth Result:
+[(0,)]
+
+================================================================================
+Test Case : 15
+
+Question:
+Name the date for sprint winner mexico
+
+Table:
+table_14
+
+Schema:
+Round (int64)
+Date (str)
+Country (str)
+Circuit (str)
+Sprint_Winner (str)
+Main_Winner (str)
+Report (str)
+
+Generated SQL:
+SELECT Date FROM table_14 WHERE Country = 'Mexico' AND Sprint_Winner IS NOT NULL;
+
+Ground Truth SQL:
+SELECT Date FROM table_14 WHERE Sprint_Winner = 'Mexico';
+
+LLM Result:
+[('26 February 2006',)]
+
+Ground Truth Result:
+[('12 March 2006',)]
+
+================================================================================
+Test Case : 16
+
+Question:
+What event was a loss in 5:00?
+
+Table:
+table_15
+
+Schema:
+Res_ (str)
+Record (str)
+Opponent (str)
+Method (str)
+Event (str)
+Round (str)
+Time (str)
+Location (str)
+
+Generated SQL:
+SELECT Event FROM table_15 WHERE Record = 'Loss' AND Time = '5:00';
+
+Ground Truth SQL:
+SELECT Event FROM table_15 WHERE Res = 'loss' AND Time = '5:00';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+Execution Error: Binder Error: Referenced column "Res" not found in FROM clause!
+Candidate bindings: "Res_", "Record", "Event", "Round", "Method"
+
+LINE 1: SELECT Event FROM table_15 WHERE Res = 'loss' AND Time = '5:00';
+                                         ^
+
+================================================================================
+Test Case : 17
+
+Question:
+For Vegas Verdicts week, what was the result?
+
+Table:
+table_16
+
+Schema:
+Week (str)
+Theme (str)
+Song_choice (str)
+Original_artist (str)
+Result (str)
+
+Generated SQL:
+SELECT Result FROM table_16 WHERE Week = 'Vegas Verdicts';
+
+Ground Truth SQL:
+SELECT Result FROM table_16 WHERE Week = 'vegas verdicts';
+
+LLM Result:
+[('Advanced',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 21
+
+Question:
+What is the game number of the game with the Edmonton Oilers as the opponent after February 12?
+
+Table:
+table_20
+
+Schema:
+Game (str)
+February (str)
+Opponent (str)
+Score (str)
+Record (str)
+
+Generated SQL:
+SELECT Game FROM table_20 WHERE Opponent = 'Edmonton Oilers' AND February > '12';
+
+Ground Truth SQL:
+SELECT COUNT(Game) FROM table_20 WHERE Opponent = 'edmonton oilers' AND February > 12;
+
+LLM Result:
+[]
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: ... FROM table_20 WHERE Opponent = 'edmonton oilers' AND February > 12;
+                                                                          ^
+
+================================================================================
+Test Case : 22
+
+Question:
+What was album of the year after 2009?
+
+Table:
+table_21
+
+Schema:
+Year (str)
+Award (str)
+Category (str)
+Nominated_Work (str)
+Result (str)
+
+Generated SQL:
+SELECT Category FROM table_21 WHERE Year > '2009' AND Result = 'Nominated';
+
+Ground Truth SQL:
+SELECT Result FROM table_21 WHERE Year > 2009 AND Category = 'album of the year';
+
+LLM Result:
+[('Album of the Year',), ('Song of the Year',)]
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: SELECT Result FROM table_21 WHERE Year > 2009 AND Category = 'album of the year';
+                                               ^
+
+================================================================================
+Test Case : 26
+
+Question:
+How much freedom can did the people of Guinea experience in 2013?
+
+Table:
+table_25
+
+Schema:
+Country (str)
+Freedom_in_the_World_2013 (str)
+2013_Index_of_Economic_Freedom (str)
+2013_Press_Freedom_Index (str)
+2012_Democracy_Index (str)
+
+Generated SQL:
+SELECT 2013_Index_of_Economic_Freedom FROM table_25 WHERE Country = 'Guinea';
+
+Ground Truth SQL:
+SELECT Freedom_in_the_World_2013 FROM table_25 WHERE Country = 'Guinea';
+
+LLM Result:
+[(2013,)]
+
+Ground Truth Result:
+[('3 partly free',)]
+
+================================================================================
+Test Case : 27
+
+Question:
+What was the series on may 27?
+
+Table:
+table_26
+
+Schema:
+Game (str)
+Date (str)
+Team (str)
+Score (str)
+High_points (str)
+High_rebounds (str)
+High_assists (str)
+Location_Attendance (str)
+Series (str)
+
+Generated SQL:
+SELECT Series FROM table_26 WHERE Date = 'May 27';
+
+Ground Truth SQL:
+SELECT Series FROM table_26 WHERE Date = 'may 27';
+
+LLM Result:
+[('3–2',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 28
+
+Question:
+What is the total number of Round with a Method of submission (ankle lock), a Location of tokyo, japan, and a Record of 13-5-2?
+
+Table:
+table_27
+
+Schema:
+Res_ (str)
+Record (str)
+Opponent (str)
+Method (str)
+Round (str)
+Time (str)
+Location (str)
+
+Generated SQL:
+SELECT COUNT(Round) FROM table_27 WHERE Method = 'submission (ankle lock)' AND Location = 'tokyo, japan' AND Record = '13-5-2';
+
+Ground Truth SQL:
+SELECT SUM(Round) FROM table_27 WHERE Method = 'submission (ankle lock)' AND Location = 'tokyo, japan' AND Record = '13-5-2';
+
+LLM Result:
+[(0,)]
+
+Ground Truth Result:
+Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
+	Candidate functions:
+	sum(DECIMAL) -> DECIMAL
+	sum(BOOLEAN) -> HUGEINT
+	sum(SMALLINT) -> HUGEINT
+	sum(INTEGER) -> HUGEINT
+	sum(BIGINT) -> HUGEINT
+	sum(HUGEINT) -> HUGEINT
+	sum(DOUBLE) -> DOUBLE
+	sum(BIGNUM) -> BIGNUM
+
+
+LINE 1: SELECT SUM(Round) FROM table_27 WHERE Method = 'submission (ankle...
+               ^
+
+================================================================================
+Test Case : 29
+
+Question:
+For the constellation scorpius and object of planetary nebula, what was the declination (J2000)?
+
+Table:
+table_28
+
+Schema:
+NGC_number (str)
+Object_type (str)
+Constellation (str)
+Right_ascension___J2000__ (str)
+Declination___J2000__ (str)
+
+Generated SQL:
+SELECT Declination___J2000__ FROM table_28 WHERE Constellation = 'scorpius' AND Object_type = 'planetary nebula';
+
+Ground Truth SQL:
+SELECT Declination__J2000_ FROM table_28 WHERE Constellation = 'scorpius' AND Object_type = 'planetary nebula';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+Execution Error: Binder Error: Referenced column "Declination__J2000_" not found in FROM clause!
+Candidate bindings: "Declination___J2000__", "Right_ascension___J2000__", "Constellation", "Object_type"
+
+LINE 1: SELECT Declination__J2000_ FROM table_28 WHERE Constellation =...
+               ^
+
+================================================================================
+Test Case : 31
+
+Question:
+At what venue was the game played where the away team was South Melbourne
+
+Table:
+table_30
+
+Schema:
+Home_team (str)
+Home_team_score (str)
+Away_team (str)
+Away_team_score (str)
+Venue (str)
+Crowd (str)
+Date (str)
+
+Generated SQL:
+SELECT Venue FROM table_30 WHERE Away_team = 'South Melbourne';
+
+Ground Truth SQL:
+SELECT Venue FROM table_30 WHERE Away_team = 'south melbourne';
+
+LLM Result:
+[('VFL Park',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 36
+
+Question:
+What is the highest lane for the poland swimmer who ranked under 6?
+
+Table:
+table_35
+
+Schema:
+Rank (str)
+Lane (str)
+Name (str)
+Nationality (str)
+Time (str)
+
+Generated SQL:
+SELECT Lane FROM table_35 WHERE Rank < '6' AND Nationality = 'poland' ORDER BY Lane DESC LIMIT 1;
+
+Ground Truth SQL:
+SELECT MAX(Lane) FROM table_35 WHERE Rank < 6 AND Nationality = 'poland';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: SELECT MAX(Lane) FROM table_35 WHERE Rank < 6 AND Nationality = 'poland';
+                                                  ^
+
+================================================================================
+Test Case : 37
+
+Question:
+What is the L2 cache for the processor with a 750MHz frequency?
+
+Table:
+table_36
+
+Schema:
+Model_Number (str)
+Frequency (str)
+L2_Cache (str)
+Front_Side_Bus (str)
+Multiplier (str)
+Voltage (str)
+Socket (str)
+
+Generated SQL:
+SELECT L2_Cache FROM table_36 WHERE Frequency = '750MHz';
+
+Ground Truth SQL:
+SELECT L2_Cache FROM table_36 WHERE Frequency = '750mhz';
+
+LLM Result:
+[('64KiB',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 38
+
+Question:
+what is the number of area where the county is marsabit?
+
+Table:
+table_37
+
+Schema:
+Code (int64)
+County (str)
+Former_Province (str)
+Area__km_2__ (str)
+Population_Census_2009 (int64)
+Capital (str)
+
+Generated SQL:
+SELECT COUNT Area__km_2__ FROM table_37 WHERE County = 'Marsabit';
+
+Ground Truth SQL:
+SELECT COUNT(Area_km_2_) FROM table_37 WHERE County = 'Marsabit';
+
+LLM Result:
+Execution Error: Binder Error: Referenced column "COUNT" not found in FROM clause!
+Candidate bindings: "Code"
+
+LINE 1: SELECT COUNT Area__km_2__ FROM table_37 WHERE County = 'Marsabit';
+               ^
+
+Ground Truth Result:
+Execution Error: Binder Error: Referenced column "Area_km_2_" not found in FROM clause!
+Candidate bindings: "Area__km_2__", "Population_Census_2009"
+
+LINE 1: SELECT COUNT(Area_km_2_) FROM table_37 WHERE County = 'Marsabit';
+                     ^
+
+================================================================================
+Test Case : 39
+
+Question:
+What was the crowd size when st kilda played home?
+
+Table:
+table_38
+
+Schema:
+Home_team (str)
+Home_team_score (str)
+Away_team (str)
+Away_team_score (str)
+Venue (str)
+Crowd (str)
+Date (str)
+
+Generated SQL:
+SELECT Crowd FROM table_38 WHERE Home_team = 'st kilda';
+
+Ground Truth SQL:
+SELECT COUNT(Crowd) FROM table_38 WHERE Home_team = 'st kilda';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+[(0,)]
+
+================================================================================
+Test Case : 40
+
+Question:
+What is the number of points when goals were 29–30?
+
+Table:
+table_39
+
+Schema:
+Season (str)
+Level (str)
+Goals (str)
+Points (str)
+Domestic_Cup (str)
+
+Generated SQL:
+SELECT Points FROM table_39 WHERE Goals = '29–30';
+
+Ground Truth SQL:
+SELECT SUM(Points) FROM table_39 WHERE Goals = '29–30';
+
+LLM Result:
+[('33',)]
+
+Ground Truth Result:
+Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
+	Candidate functions:
+	sum(DECIMAL) -> DECIMAL
+	sum(BOOLEAN) -> HUGEINT
+	sum(SMALLINT) -> HUGEINT
+	sum(INTEGER) -> HUGEINT
+	sum(BIGINT) -> HUGEINT
+	sum(HUGEINT) -> HUGEINT
+	sum(DOUBLE) -> DOUBLE
+	sum(BIGNUM) -> BIGNUM
+
+
+LINE 1: SELECT SUM(Points) FROM table_39 WHERE Goals = '29–30';
+               ^
+
+================================================================================
+Test Case : 41
+
+Question:
+What position does the player from Mississippi state play?
+
+Table:
+table_40
+
+Schema:
+Round (str)
+Pick (str)
+Overall (str)
+Name (str)
+Position (str)
+College (str)
+
+Generated SQL:
+SELECT Position FROM table_40 WHERE College = 'Mississippi State';
+
+Ground Truth SQL:
+SELECT Position FROM table_40 WHERE College = 'mississippi state';
+
+LLM Result:
+[('CB',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 42
+
+Question:
+What is the sum of Top-25 when there are more than 0 wins?
+
+Table:
+table_41
+
+Schema:
+Tournament (str)
+Wins (str)
+Top_5 (str)
+Top_10 (str)
+Top_25 (str)
+Events (str)
+Cuts_made (str)
+
+Generated SQL:
+SELECT SUM(Top_25) FROM table_41 WHERE Wins > '0';
+
+Ground Truth SQL:
+SELECT SUM(Top_25) FROM table_41 WHERE Wins > 0;
+
+LLM Result:
+Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
+	Candidate functions:
+	sum(DECIMAL) -> DECIMAL
+	sum(BOOLEAN) -> HUGEINT
+	sum(SMALLINT) -> HUGEINT
+	sum(INTEGER) -> HUGEINT
+	sum(BIGINT) -> HUGEINT
+	sum(HUGEINT) -> HUGEINT
+	sum(DOUBLE) -> DOUBLE
+	sum(BIGNUM) -> BIGNUM
+
+
+LINE 1: SELECT SUM(Top_25) FROM table_41 WHERE Wins > '0';
+               ^
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: SELECT SUM(Top_25) FROM table_41 WHERE Wins > 0;
+                                                    ^
+
+================================================================================
+Test Case : 43
+
+Question:
+How many bonus points did the club who had 379 points for have?
+
+Table:
+table_42
+
+Schema:
+Club (str)
+Played (str)
+Won (str)
+Drawn (str)
+Lost (str)
+Points_for (str)
+Points_against (str)
+Bonus_points (str)
+Points (str)
+
+Generated SQL:
+SELECT Bonus_points FROM table_42 WHERE Points_for = '379';
+
+Ground Truth SQL:
+SELECT Bonus_points FROM table_42 WHERE Points_for = 379;
+
+LLM Result:
+[('6',)]
+
+Ground Truth Result:
+Execution Error: Conversion Error: Could not convert string 'Points for' to INT32 when casting from source column Points_for
+
+LINE 1: SELECT Bonus_points FROM table_42 WHERE Points_for = 379;
+                                                ^
+
+================================================================================
+Test Case : 44
+
+Question:
+How many Malaysia Cups have a total less than 0?
+
+Table:
+table_43
+
+Schema:
+Player (str)
+League (str)
+Malaysia_Cup (str)
+FA_Cup (str)
+Total (str)
+
+Generated SQL:
+SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < '0';
+
+Ground Truth SQL:
+SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < 0;
+
+LLM Result:
+[(0,)]
+
+Ground Truth Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < 0;
+                                                             ^
+
+================================================================================
+Test Case : 48
+
+Question:
+What is the smallest rank for new zealand?
+
+Table:
+table_47
+
+Schema:
+Rank (str)
+Player (str)
+Country (str)
+Earnings_____ (str)
+Wins (str)
+
+Generated SQL:
+SELECT MIN Rank FROM table_47 WHERE Country = 'New Zealand';
+
+Ground Truth SQL:
+SELECT MIN(Rank) FROM table_47 WHERE Country = 'new zealand';
+
+LLM Result:
+Execution Error: Binder Error: Referenced column "MIN" not found in FROM clause!
+Candidate bindings: "Country"
+
+LINE 1: SELECT MIN Rank FROM table_47 WHERE Country = 'New Zealand';
+               ^
+
+Ground Truth Result:
+[(None,)]
+
+================================================================================
+Test Case : 49
+
+Question:
+On what date did Contac 12 Hours of Sebring take place?
+
+Table:
+table_48
+
+Schema:
+Race (str)
+Length (str)
+Class (str)
+Circuit (str)
+Date (str)
+
+Generated SQL:
+SELECT Date FROM table_48 WHERE Race = 'Contac 12 Hours of Sebring';
+
+Ground Truth SQL:
+SELECT Date FROM table_48 WHERE Race = 'contac 12 hours of sebring';
+
+LLM Result:
+[('March 19',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 50
+
+Question:
+how many times is the seasons 2 and the coach guy lowman?
+
+Table:
+table_49
+
+Schema:
+Coach (str)
+Years (str)
+Seasons (str)
+Record (str)
+Winning__ (str)
+
+Generated SQL:
+SELECT COUNT(*) FROM table_49 WHERE Seasons = '2' AND Coach = 'Guy Lowman';
+
+Ground Truth SQL:
+SELECT COUNT(Winning_%) FROM table_49 WHERE Seasons = 2 AND Coach = 'guy lowman';
+
+LLM Result:
+[(1,)]
+
+Ground Truth Result:
+Execution Error: Parser Error: syntax error at or near ")"
+
+LINE 1: SELECT COUNT(Winning_%) FROM table_49 WHERE Seasons = 2 AND Coach = 'guy lowman';
+                              ^
+

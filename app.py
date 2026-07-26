@@ -1,32 +1,59 @@
-import duckdb
+import asyncio
 
 from llm import generate_sql
-
 from validator import validate_sql
+
+from mcp.client.session import ClientSession
+from mcp.client.stdio import stdio_client, StdioServerParameters
 
 
 DB_PATH = "data/company.duckdb"
 
-conn = duckdb.connect(DB_PATH)
 
-question = input("Ask your question: ")
+async def main():
 
-sql = generate_sql(question)
+    question = input("Ask your question: ")
 
-print("\nGenerated SQL:\n")
+    sql = generate_sql(question)
 
-print(sql)
+    print("\nGenerated SQL:\n")
+    print(sql)
 
-if validate_sql(sql):
+    if not validate_sql(sql):
+        print("\nSQL Validation Failed")
+        return
 
-    result = conn.execute(sql).fetchall()
+    server = StdioServerParameters(
+        command="python",
+        args=[
+            "-m",
+            "uv",
+            "tool",
+            "run",
+            "mcp-server-duckdb",
+            "--db-path",
+            DB_PATH
+        ]
+    )
 
-    print("\nResult:\n")
+    async with stdio_client(server) as (read, write):
 
-    for row in result:
+        async with ClientSession(read, write) as session:
 
-        print(row)
+            await session.initialize()
 
-else:
+            result = await session.call_tool(
+                "query",
+                {
+                    "query": sql
+                }
+            )
 
-    print("\nSQL Validation Failed")
+            print("\nResult:\n")
+
+            for item in result.content:
+                print(item.text)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

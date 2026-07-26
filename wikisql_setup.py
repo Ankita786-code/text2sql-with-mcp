@@ -94,8 +94,12 @@ def create_duckdb_eval_suite(sample_size=50):
 
     return con, eval_records
 
-
 # ---------------- MAIN ----------------
+
+# Clear previous failed cases
+with open("failed_cases.txt", "w", encoding="utf-8") as f:
+    f.write("WikiSQL Failed Cases\n")
+    f.write("=" * 80 + "\n\n")
 
 db, tests = create_duckdb_eval_suite(sample_size=50)
 
@@ -107,7 +111,6 @@ total = len(tests)
 for i, test in enumerate(tests, start=1):
 
     print("=" * 70)
-
     print(f"Test Case {i}")
 
     print("\nQuestion:")
@@ -119,14 +122,12 @@ for i, test in enumerate(tests, start=1):
     print("\nSchema:")
     print(json.dumps(test["schema_dict"], indent=2))
 
-    # LLM SQL
+    # Generate SQL
     generated_sql = generate_sql(
         test["question"],
         test["table_name"],
         test["schema_text"]
     )
-    print("\nGenerated SQL:")
-    print(generated_sql)
 
     print("\nGenerated SQL:")
     print(generated_sql)
@@ -134,7 +135,7 @@ for i, test in enumerate(tests, start=1):
     print("\nGround Truth SQL:")
     print(test["ground_truth_sql"])
 
-    # Execute LLM SQL
+    # Execute Generated SQL
     try:
         llm_result = db.execute(generated_sql).fetchall()
     except Exception as e:
@@ -155,8 +156,35 @@ for i, test in enumerate(tests, start=1):
     if llm_result == gt_result:
         print("\n✅ MATCH")
         correct += 1
+
     else:
         print("\n❌ NOT MATCH")
+
+        with open("failed_cases.txt", "a", encoding="utf-8") as f:
+
+            f.write("=" * 80 + "\n")
+            f.write(f"Test Case : {i}\n\n")
+
+            f.write("Question:\n")
+            f.write(test["question"] + "\n\n")
+
+            f.write("Table:\n")
+            f.write(test["table_name"] + "\n\n")
+
+            f.write("Schema:\n")
+            f.write(test["schema_text"] + "\n")
+
+            f.write("Generated SQL:\n")
+            f.write(generated_sql + "\n\n")
+
+            f.write("Ground Truth SQL:\n")
+            f.write(test["ground_truth_sql"] + "\n\n")
+
+            f.write("LLM Result:\n")
+            f.write(str(llm_result) + "\n\n")
+
+            f.write("Ground Truth Result:\n")
+            f.write(str(gt_result) + "\n\n")
 
 print("\n" + "=" * 70)
 print("Evaluation Summary")
