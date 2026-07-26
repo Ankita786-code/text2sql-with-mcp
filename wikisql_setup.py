@@ -125,6 +125,8 @@ for i, test in enumerate(tests, start=1):
         test["table_name"],
         test["schema_text"]
     )
+    print("\nGenerated SQL:")
+    print(generated_sql)
 
     print("\nGenerated SQL:")
     print(generated_sql)
