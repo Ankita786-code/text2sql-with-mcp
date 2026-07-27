@@ -18,7 +18,7 @@ class MCPClient:
                 "run",
                 "mcp-server-duckdb",
                 "--db-path",
-                ":memory:"
+                "data/company.duckdb"
             ]
         )
 
