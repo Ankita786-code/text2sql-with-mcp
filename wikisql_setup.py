@@ -1,4 +1,4 @@
-from llm import generate_sql
+from llm_wikisql import generate_sql
 from sql_converter import logical_form_to_sql
 
 import json
