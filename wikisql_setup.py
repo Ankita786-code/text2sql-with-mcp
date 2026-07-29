@@ -1,3 +1,20 @@
+"""
+File: wikisql_setup.py
+
+Purpose:
+This module evaluates the Text-to-SQL system using the WikiSQL
+benchmark dataset.
+
+Workflow:
+1. Load WikiSQL questions and tables.
+2. Create temporary DuckDB tables for evaluation.
+3. Generate SQL queries using the LLM.
+4. Execute both generated and ground-truth SQL queries.
+5. Compare their execution results.
+6. Calculate the overall accuracy.
+7. Save all failed test cases for further analysis.
+"""
+
 from llm_wikisql import generate_sql
 from sql_converter import logical_form_to_sql
 
@@ -10,22 +27,38 @@ import re
 
 
 def create_duckdb_eval_suite(sample_size=50):
+    """
+    Creates an evaluation environment using randomly selected
+    WikiSQL test cases.
+
+    Parameters:
+        sample_size (int):
+            Number of WikiSQL test cases to evaluate.
+
+    Returns:
+        tuple:
+            DuckDB connection object and evaluation records.
+    """
 
     print("🔄 Loading WikiSQL from local files...")
 
-    # Load questions
+    # Load all WikiSQL questions
     questions = []
+
     with jsonlines.open("test.jsonl") as reader:
         for row in reader:
             questions.append(row)
 
+    # Shuffle questions for random evaluation
     random.seed(42)
     random.shuffle(questions)
 
+    # Select the required number of test cases
     sampled_data = questions[:sample_size]
 
-    # Load tables
+    # Load all WikiSQL tables
     tables = {}
+
     with jsonlines.open("test.tables.jsonl") as reader:
         for table in reader:
             tables[table["id"]] = table
@@ -34,8 +67,10 @@ def create_duckdb_eval_suite(sample_size=50):
 
     print(f"📦 Creating {sample_size} DuckDB tables...")
 
+    # Create an in-memory DuckDB database
     con = duckdb.connect(database=":memory:")
 
+    # Process every selected WikiSQL sample
     for idx, item in enumerate(sampled_data):
 
         table_name = f"table_{idx}"
@@ -45,9 +80,10 @@ def create_duckdb_eval_suite(sample_size=50):
         header = table["header"]
         rows = table["rows"]
 
+        # Convert table rows into a DataFrame
         df = pd.DataFrame(rows, columns=header)
 
-        # Clean column names
+        # Clean column names to make them SQL compatible
         cleaned_columns = []
 
         for c in df.columns:
@@ -57,25 +93,31 @@ def create_duckdb_eval_suite(sample_size=50):
 
         df.columns = cleaned_columns
 
-        # Register table
+        # Register the DataFrame as a DuckDB table
         con.register(table_name, df)
 
-        # Schema text for LLM
+        # Build schema text for the LLM
         schema_text = ""
 
         for col, dtype in zip(df.columns, df.dtypes):
             schema_text += f"{col} ({dtype})\n"
 
-        # Schema dictionary (for printing)
-        schema_dict = dict(zip(df.columns, [str(x) for x in df.dtypes]))
+        # Dictionary used for displaying the schema
+        schema_dict = dict(
+            zip(
+                df.columns,
+                [str(x) for x in df.dtypes]
+            )
+        )
 
-        # Ground Truth SQL
+        # Convert WikiSQL logical form into SQL
         ground_truth_sql = logical_form_to_sql(
             item["sql"],
             header,
             table_name
         )
 
+        # Store all information required for evaluation
         eval_records.append({
 
             "question": item["question"],
@@ -94,13 +136,17 @@ def create_duckdb_eval_suite(sample_size=50):
 
     return con, eval_records
 
-# ---------------- MAIN ----------------
 
-# Clear previous failed cases
+# ============================================================
+# Main Evaluation
+# ============================================================
+
+# Create a fresh log file for failed test cases
 with open("failed_cases.txt", "w", encoding="utf-8") as f:
     f.write("WikiSQL Failed Cases\n")
     f.write("=" * 80 + "\n\n")
 
+# Create the evaluation suite
 db, tests = create_duckdb_eval_suite(sample_size=50)
 
 print("\n========== Text2SQL Evaluation ==========\n")
@@ -108,6 +154,7 @@ print("\n========== Text2SQL Evaluation ==========\n")
 correct = 0
 total = len(tests)
 
+# Evaluate each test case
 for i, test in enumerate(tests, start=1):
 
     print("=" * 70)
@@ -122,7 +169,7 @@ for i, test in enumerate(tests, start=1):
     print("\nSchema:")
     print(json.dumps(test["schema_dict"], indent=2))
 
-    # Generate SQL
+    # Generate SQL using the LLM
     generated_sql = generate_sql(
         test["question"],
         test["table_name"],
@@ -135,15 +182,19 @@ for i, test in enumerate(tests, start=1):
     print("\nGround Truth SQL:")
     print(test["ground_truth_sql"])
 
-    # Execute Generated SQL
+    # Execute generated SQL
     try:
         llm_result = db.execute(generated_sql).fetchall()
+
     except Exception as e:
         llm_result = f"Execution Error: {e}"
 
-    # Execute Ground Truth SQL
+    # Execute ground-truth SQL
     try:
-        gt_result = db.execute(test["ground_truth_sql"]).fetchall()
+        gt_result = db.execute(
+            test["ground_truth_sql"]
+        ).fetchall()
+
     except Exception as e:
         gt_result = f"Execution Error: {e}"
 
@@ -153,14 +204,22 @@ for i, test in enumerate(tests, start=1):
     print("\nGround Truth Result:")
     print(gt_result)
 
+    # Compare the outputs
     if llm_result == gt_result:
+
         print("\n✅ MATCH")
         correct += 1
 
     else:
+
         print("\n❌ NOT MATCH")
 
-        with open("failed_cases.txt", "a", encoding="utf-8") as f:
+        # Store failed cases for future debugging
+        with open(
+            "failed_cases.txt",
+            "a",
+            encoding="utf-8"
+        ) as f:
 
             f.write("=" * 80 + "\n")
             f.write(f"Test Case : {i}\n\n")
@@ -185,6 +244,10 @@ for i, test in enumerate(tests, start=1):
 
             f.write("Ground Truth Result:\n")
             f.write(str(gt_result) + "\n\n")
+
+# ============================================================
+# Evaluation Summary
+# ============================================================
 
 print("\n" + "=" * 70)
 print("Evaluation Summary")
