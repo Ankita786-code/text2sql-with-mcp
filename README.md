@@ -45,3 +45,11 @@ text2sql-with-mcp/
 - LLM-based SQL generation using Ollama
 - MCP integration (experimental)
 - Query validation
+
+## 🎥 Project Demonstration Video
+
+A complete screen recording demonstrating the implementation and working of the project is available at the following link:
+
+**Google Drive Link:**
+
+https://drive.google.com/file/d/1smKcf_qtov-xmt4uZVNj0oU1S5yVVGTs/view?usp=drivesdk
