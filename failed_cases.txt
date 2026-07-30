@@ -2,35 +2,6 @@ WikiSQL Failed Cases
 ================================================================================
 
 ================================================================================
-Test Case : 2
-
-Question:
-When was Moores Creek Bridge built?
-
-Table:
-table_1
-
-Schema:
-Name (str)
-Built (str)
-Listed (str)
-Location (str)
-County (str)
-Type (str)
-
-Generated SQL:
-SELECT Built FROM table_1 WHERE Name = 'Moores Creek Bridge';
-
-Ground Truth SQL:
-SELECT Built FROM table_1 WHERE Name = 'moores creek bridge';
-
-LLM Result:
-[('1925',)]
-
-Ground Truth Result:
-[]
-
-================================================================================
 Test Case : 3
 
 Question:
@@ -49,13 +20,19 @@ Against____ (str)
 __Yes_side_2008____ (str)
 
 Generated SQL:
-SELECT For____ FROM table_2 WHERE __Yes_side_2008____ = '+20.3';
+SELECT "For____" 
+FROM table_2 
+WHERE `__Yes_side_2008____` = '+20.3';
 
 Ground Truth SQL:
 SELECT For_% FROM table_2 WHERE ±_Yes_side_2008_% = +20.3;
 
 LLM Result:
-[('21,045 (63.5)',)]
+Execution Error: Catalog Error: Scalar Function with name `__postfix does not exist!
+Did you mean "!__postfix"?
+
+LINE 3: WHERE `__Yes_side_2008____` = '+20.3';
+                                  ^
 
 Ground Truth Result:
 Execution Error: Parser Error: syntax error at or near "FROM"
@@ -84,7 +61,9 @@ Avg__spd_ (str)
 Rally_leader (str)
 
 Generated SQL:
-SELECT COUNT(Leg) FROM table_5 WHERE Name = 'ss17';
+SELECT COUNT(*) 
+FROM table_5 
+WHERE Name = 'ss17';
 
 Ground Truth SQL:
 SELECT COUNT(Leg) FROM table_5 WHERE Stage = 'SS17';
@@ -94,6 +73,34 @@ LLM Result:
 
 Ground Truth Result:
 [(1,)]
+
+================================================================================
+Test Case : 7
+
+Question:
+Who does jeremy evans play for?
+
+Table:
+table_6
+
+Schema:
+Player (str)
+Nationality (str)
+Position (str)
+Years_for_Jazz (str)
+School_Club_Team (str)
+
+Generated SQL:
+SELECT Player, Position FROM table_6 WHERE Player = 'Jeremy Evans';
+
+Ground Truth SQL:
+SELECT School_Club_Team FROM table_6 WHERE Player = 'jeremy evans';
+
+LLM Result:
+[('Jeremy Evans', 'Forward')]
+
+Ground Truth Result:
+[]
 
 ================================================================================
 Test Case : 8
@@ -113,13 +120,17 @@ __of_popular_vote (str)
 result (str)
 
 Generated SQL:
-SELECT __of_seats_won FROM table_7 ORDER BY __of_seats_won DESC LIMIT 1;
+SELECT `__of_seats_won` FROM table_7 ORDER BY `__of_seats_won` DESC LIMIT 1;
 
 Ground Truth SQL:
 SELECT MAX(#_of_seats_won) FROM table_7;
 
 LLM Result:
-[(190,)]
+Execution Error: Catalog Error: Scalar Function with name `__postfix does not exist!
+Did you mean "!__postfix"?
+
+LINE 1: SELECT `__of_seats_won` FROM table_7 ORDER BY `__of_seats_won` DESC LIMIT 1;
+                              ^
 
 Ground Truth Result:
 Execution Error: Parser Error: syntax error at or near "_of_seats_won"
@@ -144,19 +155,119 @@ Engine (str)
 Points (str)
 
 Generated SQL:
-SELECT MAX ( Points ) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < '1954';
+SELECT Points FROM table_8 WHERE Chassis = 'gordini t16' AND Year < '1954';
 
 Ground Truth SQL:
 SELECT MAX(Points) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < 1954;
 
 LLM Result:
-[(None,)]
+[]
 
 Ground Truth Result:
 Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
 
 LINE 1: ...(Points) FROM table_8 WHERE Chassis = 'gordini t16' AND Year < 1954;
                                                                         ^
+
+================================================================================
+Test Case : 11
+
+Question:
+Name the President has a Media Officer of pete marshall/ nazar striletski?
+
+Table:
+table_10
+
+Schema:
+Season (str)
+President (str)
+General_Sec (str)
+Treasurer (str)
+Fixtures_Sec (str)
+Social_Sec_Bradford (str)
+Social_Sec_Leeds (str)
+Media_Officer (str)
+
+Generated SQL:
+SELECT Season, President, General_Sec, Treasurer, Fixtures_Sec, Social_Sec_Bradford, Social_Sec_Leeds, Media_Officer 
+FROM table_10 
+WHERE Media_Officer = 'Pete Marshall/ Nazar Striletski';
+
+Ground Truth SQL:
+SELECT President FROM table_10 WHERE Media_Officer = 'pete marshall/ nazar striletski';
+
+LLM Result:
+[('2011–2012', 'Tom Dawson', 'Omar Chu', 'Dave Reid', 'N/A', 'N/A', 'Bridget Pike', 'Pete Marshall/ Nazar Striletski')]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 12
+
+Question:
+Name the league finish for w being 11
+
+Table:
+table_11
+
+Schema:
+Season (int64)
+Winner (str)
+Captain (str)
+Coach (str)
+League_finish (str)
+Mat (int64)
+W (int64)
+L (int64)
+Win__ (str)
+Runner_up (str)
+
+Generated SQL:
+SELECT `League_finish` FROM table_11 WHERE `W` = 11;
+
+Ground Truth SQL:
+SELECT League_finish FROM table_11 WHERE W = 11;
+
+LLM Result:
+Execution Error: Catalog Error: Scalar Function with name `__postfix does not exist!
+Did you mean "!__postfix"?
+
+LINE 1: SELECT `League_finish` FROM table_11 WHERE `W` = 11;
+                                                     ^
+
+Ground Truth Result:
+[('2nd',)]
+
+================================================================================
+Test Case : 13
+
+Question:
+What is the number of voters in 1800 that have boroughs named Drogheda?
+
+Table:
+table_12
+
+Schema:
+Borough (str)
+County (str)
+Franchise_type (str)
+Members (int64)
+Voters_in_1800 (int64)
+Times_contested (int64)
+Fate_in_1832 (str)
+
+Generated SQL:
+SELECT Voters_in_1800 FROM table_12 WHERE Borough = 'Drogheda';
+
+Ground Truth SQL:
+SELECT COUNT(Voters_in_1800) FROM table_12 WHERE Borough = 'Drogheda';
+
+LLM Result:
+[(600,)]
+
+Ground Truth Result:
+[(1,)]
 
 ================================================================================
 Test Case : 14
@@ -175,7 +286,7 @@ Music_director (str)
 Lyricist (str)
 
 Generated SQL:
-SELECT Year FROM table_13 WHERE Film_name = 'Rang Barse';
+SELECT "Year" FROM table_13 WHERE "Film_name" = 'Rang Barse';
 
 Ground Truth SQL:
 SELECT COUNT(Year) FROM table_13 WHERE Film_name = 'rang barse';
@@ -185,36 +296,6 @@ LLM Result:
 
 Ground Truth Result:
 [(0,)]
-
-================================================================================
-Test Case : 15
-
-Question:
-Name the date for sprint winner mexico
-
-Table:
-table_14
-
-Schema:
-Round (int64)
-Date (str)
-Country (str)
-Circuit (str)
-Sprint_Winner (str)
-Main_Winner (str)
-Report (str)
-
-Generated SQL:
-SELECT Date FROM table_14 WHERE Country = 'Mexico' AND Sprint_Winner IS NOT NULL;
-
-Ground Truth SQL:
-SELECT Date FROM table_14 WHERE Sprint_Winner = 'Mexico';
-
-LLM Result:
-[('26 February 2006',)]
-
-Ground Truth Result:
-[('12 March 2006',)]
 
 ================================================================================
 Test Case : 16
@@ -236,13 +317,13 @@ Time (str)
 Location (str)
 
 Generated SQL:
-SELECT Event FROM table_15 WHERE Record = 'Loss' AND Time = '5:00';
+SELECT Event FROM table_15 WHERE Time = '5:00' AND Method != 'win';
 
 Ground Truth SQL:
 SELECT Event FROM table_15 WHERE Res = 'loss' AND Time = '5:00';
 
 LLM Result:
-[]
+[('WEC 34',), ('Shooto - Brazil 11',), ('Top Fighter MMA 2',), ('IMVT - Iron Man Vale Tudo',)]
 
 Ground Truth Result:
 Execution Error: Binder Error: Referenced column "Res" not found in FROM clause!
@@ -268,13 +349,75 @@ Original_artist (str)
 Result (str)
 
 Generated SQL:
-SELECT Result FROM table_16 WHERE Week = 'Vegas Verdicts';
+SELECT "Result" FROM table_16 WHERE "Week" = 'Vegas Verdicts';
 
 Ground Truth SQL:
 SELECT Result FROM table_16 WHERE Week = 'vegas verdicts';
 
 LLM Result:
 [('Advanced',)]
+
+Ground Truth Result:
+[]
+
+================================================================================
+Test Case : 19
+
+Question:
+Which opponent led to a 6-3 record?
+
+Table:
+table_18
+
+Schema:
+Result (str)
+Record (str)
+Opponent (str)
+Event (str)
+Method (str)
+Round (str)
+Time (str)
+
+Generated SQL:
+SELECT Opponent FROM table_18 WHERE Result = '6-3';
+
+Ground Truth SQL:
+SELECT Opponent FROM table_18 WHERE Record = '6-3';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+[('Mirko Filipović',)]
+
+================================================================================
+Test Case : 20
+
+Question:
+Which circuit has a Race Title of japanese grand prix?
+
+Table:
+table_19
+
+Schema:
+Round (str)
+Race_Title (str)
+Grand_Prix (str)
+Circuit (str)
+Date (str)
+
+Generated SQL:
+SELECT Circuit FROM table_19 WHERE "Race Title" = 'Japanese Grand Prix';
+
+Ground Truth SQL:
+SELECT Circuit FROM table_19 WHERE Race_Title = 'japanese grand prix';
+
+LLM Result:
+Execution Error: Binder Error: Referenced column "Race Title" not found in FROM clause!
+Candidate bindings: "Race_Title", "Circuit", "Date"
+
+LINE 1: SELECT Circuit FROM table_19 WHERE "Race Title" = 'Japanese Grand Prix';
+                                           ^
 
 Ground Truth Result:
 []
@@ -296,7 +439,7 @@ Score (str)
 Record (str)
 
 Generated SQL:
-SELECT Game FROM table_20 WHERE Opponent = 'Edmonton Oilers' AND February > '12';
+SELECT Game FROM table_20 WHERE Opponent = 'Edmonton Oilers' AND February > 'February 12';
 
 Ground Truth SQL:
 SELECT COUNT(Game) FROM table_20 WHERE Opponent = 'edmonton oilers' AND February > 12;
@@ -327,13 +470,13 @@ Nominated_Work (str)
 Result (str)
 
 Generated SQL:
-SELECT Category FROM table_21 WHERE Year > '2009' AND Result = 'Nominated';
+SELECT "Nominated_Work" FROM table_21 WHERE "Year" = 'Album of the Year' AND CAST("Year" AS INTEGER) > 2009 ORDER BY CAST("Year" AS INTEGER) DESC LIMIT 1;
 
 Ground Truth SQL:
 SELECT Result FROM table_21 WHERE Year > 2009 AND Category = 'album of the year';
 
 LLM Result:
-[('Album of the Year',), ('Song of the Year',)]
+[]
 
 Ground Truth Result:
 Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
@@ -342,32 +485,32 @@ LINE 1: SELECT Result FROM table_21 WHERE Year > 2009 AND Category = 'album of t
                                                ^
 
 ================================================================================
-Test Case : 26
+Test Case : 24
 
 Question:
-How much freedom can did the people of Guinea experience in 2013?
+Position of member, and a Tenure Began of 2010, and a Name of xue hanqin has what lowest term ending?
 
 Table:
-table_25
+table_23
 
 Schema:
-Country (str)
-Freedom_in_the_World_2013 (str)
-2013_Index_of_Economic_Freedom (str)
-2013_Press_Freedom_Index (str)
-2012_Democracy_Index (str)
+Name (str)
+Nationality (str)
+Position (str)
+Tenure_Began (str)
+Term_Ending (str)
 
 Generated SQL:
-SELECT 2013_Index_of_Economic_Freedom FROM table_25 WHERE Country = 'Guinea';
+SELECT "Term_Ending" FROM table_23 WHERE "Name" = 'Xue Hanqin' AND "Position" = 'member' AND "Tenure_Began" = '2010';
 
 Ground Truth SQL:
-SELECT Freedom_in_the_World_2013 FROM table_25 WHERE Country = 'Guinea';
+SELECT MIN(Term_Ending) FROM table_23 WHERE Position = 'member' AND Tenure_Began = 2010 AND Name = 'xue hanqin';
 
 LLM Result:
-[(2013,)]
+[]
 
 Ground Truth Result:
-[('3 partly free',)]
+[(None,)]
 
 ================================================================================
 Test Case : 27
@@ -420,13 +563,17 @@ Time (str)
 Location (str)
 
 Generated SQL:
-SELECT COUNT(Round) FROM table_27 WHERE Method = 'submission (ankle lock)' AND Location = 'tokyo, japan' AND Record = '13-5-2';
+SELECT COUNT(*) FROM table_27 WHERE Res = '13-5-2' AND Method = 'ankle lock' AND Location = 'tokyo, japan';
 
 Ground Truth SQL:
 SELECT SUM(Round) FROM table_27 WHERE Method = 'submission (ankle lock)' AND Location = 'tokyo, japan' AND Record = '13-5-2';
 
 LLM Result:
-[(0,)]
+Execution Error: Binder Error: Referenced column "Res" not found in FROM clause!
+Candidate bindings: "Res_", "Record", "Round", "Method"
+
+LINE 1: SELECT COUNT(*) FROM table_27 WHERE Res = '13-5-2' AND Method = 'ankle lock' AND Location =...
+                                            ^
 
 Ground Truth Result:
 Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
@@ -461,7 +608,7 @@ Right_ascension___J2000__ (str)
 Declination___J2000__ (str)
 
 Generated SQL:
-SELECT Declination___J2000__ FROM table_28 WHERE Constellation = 'scorpius' AND Object_type = 'planetary nebula';
+SELECT "Declination___J2000__" FROM table_28 WHERE "Constellation" = 'scorpius' AND "Object_type" = 'planetary nebula';
 
 Ground Truth SQL:
 SELECT Declination__J2000_ FROM table_28 WHERE Constellation = 'scorpius' AND Object_type = 'planetary nebula';
@@ -475,6 +622,37 @@ Candidate bindings: "Declination___J2000__", "Right_ascension___J2000__", "Const
 
 LINE 1: SELECT Declination__J2000_ FROM table_28 WHERE Constellation =...
                ^
+
+================================================================================
+Test Case : 30
+
+Question:
+What is the Frequency that is smaller than 100,000 Watts in guymon, oklahoma?
+
+Table:
+table_29
+
+Schema:
+Call_sign (str)
+Frequency (str)
+City_of_license (str)
+Watts (str)
+Class (str)
+
+Generated SQL:
+SELECT "Frequency" FROM table_29 WHERE "Watts" < 100000 AND "City_of_license" = 'guymon' AND "Class" = 'oklahoma';
+
+Ground Truth SQL:
+SELECT Frequency FROM table_29 WHERE Watts < '100,000' AND City_of_license = 'guymon, oklahoma';
+
+LLM Result:
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: SELECT "Frequency" FROM table_29 WHERE "Watts" < 100000 AND "City_of_license" = 'guymon' AND "Class" =...
+                                                       ^
+
+Ground Truth Result:
+[]
 
 ================================================================================
 Test Case : 31
@@ -507,6 +685,63 @@ Ground Truth Result:
 []
 
 ================================================================================
+Test Case : 32
+
+Question:
+Which Reigns has 92 days held?
+
+Table:
+table_31
+
+Schema:
+Wrestler (str)
+Reigns (str)
+Days_held (str)
+Location (str)
+Successful_defenses (str)
+Event (str)
+
+Generated SQL:
+SELECT * FROM table_31 WHERE Days_held = '92';
+
+Ground Truth SQL:
+SELECT Reigns FROM table_31 WHERE Days_held = 92;
+
+LLM Result:
+[('Mikey Whipwreck Category:Articles with hCards', '1', '92', 'Philadelphia, PA', '—', 'Hardcore TV #56')]
+
+Ground Truth Result:
+[('1',)]
+
+================================================================================
+Test Case : 34
+
+Question:
+What is the Country of the Player with a To par of –1?
+
+Table:
+table_33
+
+Schema:
+Place (str)
+Player (str)
+Country (str)
+Score (str)
+To_par (str)
+
+Generated SQL:
+SELECT Country FROM table_33 WHERE To_par = '-1';
+
+Ground Truth SQL:
+SELECT Country FROM table_33 WHERE To_par = '–1';
+
+LLM Result:
+[]
+
+Ground Truth Result:
+[('Australia',), ('United States',), ('United States',), ('United States',), ('United States',), ('Fiji',), ('United States',)]
+
+================================================================================
 Test Case : 36
 
 Question:
@@ -523,49 +758,22 @@ Nationality (str)
 Time (str)
 
 Generated SQL:
-SELECT Lane FROM table_35 WHERE Rank < '6' AND Nationality = 'poland' ORDER BY Lane DESC LIMIT 1;
+SELECT Lane FROM table_35 WHERE Nationality = 'Poland' AND Rank < 6 ORDER BY Rank LIMIT 1;
 
 Ground Truth SQL:
 SELECT MAX(Lane) FROM table_35 WHERE Rank < 6 AND Nationality = 'poland';
 
 LLM Result:
-[]
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
+
+LINE 1: ... Lane FROM table_35 WHERE Nationality = 'Poland' AND Rank < 6 ORDER BY Rank LIMIT 1;
+                                                                     ^
 
 Ground Truth Result:
 Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
 
 LINE 1: SELECT MAX(Lane) FROM table_35 WHERE Rank < 6 AND Nationality = 'poland';
                                                   ^
-
-================================================================================
-Test Case : 37
-
-Question:
-What is the L2 cache for the processor with a 750MHz frequency?
-
-Table:
-table_36
-
-Schema:
-Model_Number (str)
-Frequency (str)
-L2_Cache (str)
-Front_Side_Bus (str)
-Multiplier (str)
-Voltage (str)
-Socket (str)
-
-Generated SQL:
-SELECT L2_Cache FROM table_36 WHERE Frequency = '750MHz';
-
-Ground Truth SQL:
-SELECT L2_Cache FROM table_36 WHERE Frequency = '750mhz';
-
-LLM Result:
-[('64KiB',)]
-
-Ground Truth Result:
-[]
 
 ================================================================================
 Test Case : 38
@@ -585,17 +793,13 @@ Population_Census_2009 (int64)
 Capital (str)
 
 Generated SQL:
-SELECT COUNT Area__km_2__ FROM table_37 WHERE County = 'Marsabit';
+SELECT "Area__km_2__" FROM table_37 WHERE "County" = 'Marsabit';
 
 Ground Truth SQL:
 SELECT COUNT(Area_km_2_) FROM table_37 WHERE County = 'Marsabit';
 
 LLM Result:
-Execution Error: Binder Error: Referenced column "COUNT" not found in FROM clause!
-Candidate bindings: "Code"
-
-LINE 1: SELECT COUNT Area__km_2__ FROM table_37 WHERE County = 'Marsabit';
-               ^
+[('66,923.1',)]
 
 Ground Truth Result:
 Execution Error: Binder Error: Referenced column "Area_km_2_" not found in FROM clause!
@@ -623,13 +827,15 @@ Crowd (str)
 Date (str)
 
 Generated SQL:
-SELECT Crowd FROM table_38 WHERE Home_team = 'st kilda';
+SELECT "Crowd" 
+FROM "table_38" 
+WHERE "Home_team" = 'St Kilda';
 
 Ground Truth SQL:
 SELECT COUNT(Crowd) FROM table_38 WHERE Home_team = 'st kilda';
 
 LLM Result:
-[]
+[('25,081',)]
 
 Ground Truth Result:
 [(0,)]
@@ -651,13 +857,13 @@ Points (str)
 Domestic_Cup (str)
 
 Generated SQL:
-SELECT Points FROM table_39 WHERE Goals = '29–30';
+SELECT Points FROM table_39 WHERE Goals = '29-30';
 
 Ground Truth SQL:
 SELECT SUM(Points) FROM table_39 WHERE Goals = '29–30';
 
 LLM Result:
-[('33',)]
+[]
 
 Ground Truth Result:
 Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
@@ -723,26 +929,16 @@ Events (str)
 Cuts_made (str)
 
 Generated SQL:
-SELECT SUM(Top_25) FROM table_41 WHERE Wins > '0';
+SELECT SUM("Top_25") FROM "table_41" WHERE "Wins" > 0;
 
 Ground Truth SQL:
 SELECT SUM(Top_25) FROM table_41 WHERE Wins > 0;
 
 LLM Result:
-Execution Error: Binder Error: No function matches the given name and argument types 'sum(VARCHAR)'. You might need to add explicit type casts.
-	Candidate functions:
-	sum(DECIMAL) -> DECIMAL
-	sum(BOOLEAN) -> HUGEINT
-	sum(SMALLINT) -> HUGEINT
-	sum(INTEGER) -> HUGEINT
-	sum(BIGINT) -> HUGEINT
-	sum(HUGEINT) -> HUGEINT
-	sum(DOUBLE) -> DOUBLE
-	sum(BIGNUM) -> BIGNUM
+Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
 
-
-LINE 1: SELECT SUM(Top_25) FROM table_41 WHERE Wins > '0';
-               ^
+LINE 1: SELECT SUM("Top_25") FROM "table_41" WHERE "Wins" > 0;
+                                                          ^
 
 Ground Truth Result:
 Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
@@ -771,13 +967,13 @@ Bonus_points (str)
 Points (str)
 
 Generated SQL:
-SELECT Bonus_points FROM table_42 WHERE Points_for = '379';
+SELECT Bonus_points FROM table_42 WHERE Points = '379';
 
 Ground Truth SQL:
 SELECT Bonus_points FROM table_42 WHERE Points_for = 379;
 
 LLM Result:
-[('6',)]
+[]
 
 Ground Truth Result:
 Execution Error: Conversion Error: Could not convert string 'Points for' to INT32 when casting from source column Points_for
@@ -802,19 +998,90 @@ FA_Cup (str)
 Total (str)
 
 Generated SQL:
-SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < '0';
+SELECT COUNT(*) FROM table_43 WHERE "Malaysia Cup" < 0;
 
 Ground Truth SQL:
 SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < 0;
 
 LLM Result:
-[(0,)]
+Execution Error: Binder Error: Referenced column "Malaysia Cup" not found in FROM clause!
+Candidate bindings: "Malaysia_Cup", "Total"
+
+LINE 1: SELECT COUNT(*) FROM table_43 WHERE "Malaysia Cup" < 0;
+                                            ^
 
 Ground Truth Result:
 Execution Error: Binder Error: Cannot compare values of type VARCHAR and type INTEGER_LITERAL - an explicit cast is required
 
 LINE 1: SELECT COUNT(Malaysia_Cup) FROM table_43 WHERE Total < 0;
                                                              ^
+
+================================================================================
+Test Case : 45
+
+Question:
+How many different games had David Lee (13) with High rebounds?
+
+Table:
+table_44
+
+Schema:
+Game (int64)
+Date (str)
+Team (str)
+Score (str)
+High_points (str)
+High_rebounds (str)
+High_assists (str)
+Location_Attendance (str)
+Record (str)
+
+Generated SQL:
+SELECT COUNT(DISTINCT Game) 
+FROM table_44 
+WHERE High_rebounds LIKE '%David Lee%';
+
+Ground Truth SQL:
+SELECT COUNT(Score) FROM table_44 WHERE High_rebounds = 'David Lee (13)';
+
+LLM Result:
+[(12,)]
+
+Ground Truth Result:
+[(1,)]
+
+================================================================================
+Test Case : 46
+
+Question:
+Who received 6,131 televotes?
+
+Table:
+table_45
+
+Schema:
+Draw (str)
+Televotes (str)
+Televote_Points (str)
+Jury_Points (str)
+Total (str)
+Final_Points (str)
+
+Generated SQL:
+SELECT str FROM table_45 WHERE Televotes = '6131';
+
+Ground Truth SQL:
+SELECT Televote_Points FROM table_45 WHERE Televotes = '6,131';
+
+LLM Result:
+Execution Error: Binder Error: Referenced column "str" not found in FROM clause!
+Candidate bindings: "Draw", "Total"
+
+LINE 1: SELECT str FROM table_45 WHERE Televotes = '6131';
+               ^
+
+Ground Truth Result:
+[('0',)]
 
 ================================================================================
 Test Case : 48
@@ -833,17 +1100,13 @@ Earnings_____ (str)
 Wins (str)
 
 Generated SQL:
-SELECT MIN Rank FROM table_47 WHERE Country = 'New Zealand';
+SELECT MIN(Rank) FROM table_47 WHERE Country = 'New Zealand';
 
 Ground Truth SQL:
 SELECT MIN(Rank) FROM table_47 WHERE Country = 'new zealand';
 
 LLM Result:
-Execution Error: Binder Error: Referenced column "MIN" not found in FROM clause!
-Candidate bindings: "Country"
-
-LINE 1: SELECT MIN Rank FROM table_47 WHERE Country = 'New Zealand';
-               ^
+[('1',)]
 
 Ground Truth Result:
 [(None,)]
