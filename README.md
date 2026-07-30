@@ -54,8 +54,3 @@ A complete screen recording demonstrating the implementation and working of the 
 
 https://drive.google.com/file/d/1smKcf_qtov-xmt4uZVNj0oU1S5yVVGTs/view?usp=drivesdk
 
-## 📄 Project Report
-
-The detailed internship project report for this project is available below.
-
-- 📄 [Summer Internship Project Report (PDF)](bordered_Summer_Internship%20Report%20Template%202026.docx%20(2)%20(1).pdf)
